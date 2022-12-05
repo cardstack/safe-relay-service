@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: docker/web/Dockerfile
     env_file:
-      - .env_ganache
+      - .env_ganache # Set this to the forked ganache env and set the ganache command to `--defaultBalanceEther --fork INSERT_RPC_ADDRESS -d`
     depends_on:
       - db
       - redis
@@ -15,6 +15,8 @@ services:
       - "8888:8888"
     volumes:
       - nginx-shared:/nginx
+      - ./safe_relay_service:/app/safe_relay_service
+      - ./config:/app/config
     command: docker/web/run_web.sh
 
   worker: &worker
@@ -23,6 +25,9 @@ services:
       dockerfile: docker/web/Dockerfile
     env_file:
       - .env_ganache
+    volumes:
+      - ./safe_relay_service:/app/safe_relay_service
+      - ./config:/app/config
     depends_on:
       - db
       - redis
